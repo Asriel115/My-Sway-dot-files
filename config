@@ -5,12 +5,13 @@
 # user config directory
 
 # To get the stupid fucking screenshare working on wayland
-exec dbus-update-activation-environment DISPLAY I3SOCK SWAYSOCK WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+#exec dbus-update-activation-environment DISPLAY I3SOCK SWAYSOCK WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
-font pango: SF-Pro 11
+# Fixing stupid cursor inconsistency with XWayland apps....
+seat * xcursor_theme Qogir 24
 
 include $HOME/.config/sway/config.d/*
-
+exec sway-audio-idle-inhibit
 exec /usr/libexec/pipewire-launcher
 exec --no-startup-id dbus-update-activation-environment --all
 
@@ -26,27 +27,60 @@ exec_always {
 	gsettings set $gnome-schema font-name 'SF Pro'
 }
 # Turn off Mouse Acceleration
-input "1133:49291:Logitech_G502_HERO_Gaming_Mouse" {
+input "4152:5929:SteelSeries_SteelSeries_Rival_110_Gaming_Mouse" {
     accel_profile "flat"
     pointer_accel -0.1
 }
 
 # Display Config
-  output DP-2 pos 0 0 
-  output  HDMI-A-2 pos 1920 0 
-  output  HDMI-A-2 mode 1920x1080@239.760Hz 
-  output  DP-2  mode 1920x1080@240.055Hz adaptive_sync on
-  exec swaymsg focus output DP-2
+  output DP-1 pos 0 0 
+  output  DP-2 pos 1920 0 
+  output  DP-2 mode 1920x1080@240.055Hz adaptive_sync off allow_tearing yes
+  output  DP-1  mode 1920x1080@239.760Hz adaptive_sync off allow_tearing yes
+  exec swaymsg focus output DP-1
 
-  workspace 2 
-  exec discord
+  workspace 1 
+  exec sable
 
   # Borders and Gaps
 
   gaps inner 4
   gaps outer 4
 
+  # Thin borders:
+  smart_borders on
+  
+
   default_border pixel 2 
 
   titlebar_padding 8 2
   titlebar_border_thickness 2
+
+  # Swayfx eye candy
+  #blur enable 
+  blur_passes 1
+  #blur_radius 2
+  #corner_radius 18
+  shadows_on_csd enable
+  shadow_blur_radius 2
+  shadow_color #7851A9
+  default_dim_inactive 0.15
+  dim_inactive_colors.unfocused #000000FF
+  titlebar_separator disable
+  blur_xray off
+
+  # Waybar effects
+  layer_effects "waybar" blur enable; shadows enable; corner_radius 18
+
+# Variable
+set $mod Mod4
+set $lock swaylock --screenshots --clock --indicator --indicator-radius 100 --indicator-thickness 7 --effect-vignette 0.5:0.5 --ring-color bb00cc --key-hl-color 880033 --line-color 00000000 --inside-color 00000088 --separator-color 00000000 --grace 5 --fade-in 0.2 --show-failed-attempts -K 
+
+    blur enable
+    blur_radius 2
+    blur_brightness 1
+    shadows enable
+    corner_radius 10
+
+# Stop idling with fullscreen apps!
+exec_always ~/.config/sway/scripts/sway-fullscreen-inhibit.sh
